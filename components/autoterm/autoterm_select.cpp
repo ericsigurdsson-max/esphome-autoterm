@@ -12,8 +12,8 @@ void ModeSelect::control(const std::string &value) {
     if (p->apply_operating_mode(value)) {
       this->publish_state(value);
     } else {
-      const char *previous = this->current_option();
-      this->publish_state(previous ? previous : "");
+      const auto previous = this->current_option();
+      this->publish_state(previous.empty() ? "" : previous.c_str());
     }
   }
 }
