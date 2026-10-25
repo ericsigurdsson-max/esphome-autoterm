@@ -67,6 +67,9 @@ class AUTOTerm : public Component {
   void set_panel_temperature_sensor(sensor::Sensor *sensor) { panel_temperature_sensor_ = sensor; }
   void set_external_temperature_sensor(sensor::Sensor *sensor) { external_temperature_sensor_ = sensor; }
   void set_battery_voltage_sensor(sensor::Sensor *sensor) { this->battery_voltage_sensor_ = sensor; }
+  void set_fan_speed_target_sensor(sensor::Sensor *sensor) { this->fan_speed_target_sensor_ = sensor; }
+  void set_fan_speed_actual_sensor(sensor::Sensor *sensor) { this->fan_speed_actual_sensor_ = sensor; }
+  void set_fuel_pump_frequency_sensor(sensor::Sensor *sensor) { this->fuel_pump_frequency_sensor_ = sensor; }
   void set_operating_state_sensor(text_sensor::TextSensor *sensor) { operating_state_sensor_ = sensor; }
 
   // --- select setters --
@@ -130,6 +133,9 @@ class AUTOTerm : public Component {
   sensor::Sensor *panel_temperature_sensor_{nullptr};
   sensor::Sensor *external_temperature_sensor_{nullptr};
   sensor::Sensor *battery_voltage_sensor_{nullptr};
+  sensor::Sensor *fan_speed_target_sensor_{nullptr};
+  sensor::Sensor *fan_speed_actual_sensor_{nullptr};
+  sensor::Sensor *fuel_pump_frequency_sensor_{nullptr};
   text_sensor::TextSensor *operating_state_sensor_{nullptr};
   select::Select *operating_mode_select_{nullptr};
   switch_::Switch *power_switch_{nullptr};
