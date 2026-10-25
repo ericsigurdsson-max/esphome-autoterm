@@ -163,7 +163,11 @@ void AUTOTerm::parse_message_(const std::vector<uint8_t> &buf) {
         // 11 battery voltage LSB
         // 12
         // 13 heater core temp ???? 
-        // 14 operating mode
+        // 14 operating state
+        // With the documented 19-byte extended status payload:
+        // 16 requested fan speed (60 RPM per count)
+        // 17 actual fan speed (60 RPM per count)
+        // 19 fuel pump frequency (0.01 Hz per count)
         //    crc
         // 15 crc
         // 16 crc
@@ -171,6 +175,17 @@ void AUTOTerm::parse_message_(const std::vector<uint8_t> &buf) {
         this->autoterm_external_temperature_ = buf[9]; // no forced mqtt refresh
         this->autoterm_battery_voltage_ = (static_cast<uint16_t>(buf[10]) << 8) | static_cast<uint16_t>(buf[11]); // no forced mqtt refresh
         if (this->autoterm_operating_state_ != buf[14]) { this->autoterm_operating_state_ = buf[14]; this->autoterm_data_changed_ = true;}
+        // Passive telemetry from the 19-byte status format documented for Air 2D.
+        // Publish every valid status response to follow startup/ramp-down in near real time.
+        // Air 4D byte layout must be verified on hardware before trusting the values.
+        if (buf[2] == 19 && buf.size() == 26) {
+          if (this->fan_speed_target_sensor_ != nullptr)
+            this->fan_speed_target_sensor_->publish_state(static_cast<float>(buf[16]) * 60.0f);
+          if (this->fan_speed_actual_sensor_ != nullptr)
+            this->fan_speed_actual_sensor_->publish_state(static_cast<float>(buf[17]) * 60.0f);
+          if (this->fuel_pump_frequency_sensor_ != nullptr)
+            this->fuel_pump_frequency_sensor_->publish_state(static_cast<float>(buf[19]) / 100.0f);
+        }
         break;
       case CMD_PANEL_TEMP_REPORT:
         if (buf.size() < 8) return; // message size
