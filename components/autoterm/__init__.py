@@ -65,6 +65,9 @@ CONF_HEATER_TEMPERATURE = "heater_temperature"
 CONF_PANEL_TEMPERATURE = "panel_temperature"
 CONF_EXTERNAL_TEMPERATURE = "external_temperature"
 CONF_BATTERY_VOLTAGE = "battery_voltage"
+CONF_FAN_SPEED_TARGET = "fan_speed_target"
+CONF_FAN_SPEED_ACTUAL = "fan_speed_actual"
+CONF_FUEL_PUMP_FREQUENCY = "fuel_pump_frequency"
 
 CONF_TEMPERATURE_SETPOINT = "temperature_setpoint"
 CONF_POWER_LEVEL = "power_level"
@@ -118,6 +121,21 @@ CONFIG_SCHEMA = cv.All(
                 unit_of_measurement=UNIT_VOLT,
                 accuracy_decimals=1,
                 device_class=DEVICE_CLASS_VOLTAGE,
+            ),
+            cv.Optional(CONF_FAN_SPEED_TARGET): sensor.sensor_schema(
+                unit_of_measurement="rpm",
+                accuracy_decimals=0,
+                icon="mdi:fan",
+            ),
+            cv.Optional(CONF_FAN_SPEED_ACTUAL): sensor.sensor_schema(
+                unit_of_measurement="rpm",
+                accuracy_decimals=0,
+                icon="mdi:fan",
+            ),
+            cv.Optional(CONF_FUEL_PUMP_FREQUENCY): sensor.sensor_schema(
+                unit_of_measurement="Hz",
+                accuracy_decimals=2,
+                icon="mdi:engine",
             ),
 
             cv.Optional(CONF_TEMPERATURE_SETPOINT): number.number_schema(
@@ -203,6 +221,18 @@ async def to_code(config):
     if CONF_BATTERY_VOLTAGE in config:
         sens = await sensor.new_sensor(config[CONF_BATTERY_VOLTAGE])
         cg.add(var.set_battery_voltage_sensor(sens))
+
+    if CONF_FAN_SPEED_TARGET in config:
+        sens = await sensor.new_sensor(config[CONF_FAN_SPEED_TARGET])
+        cg.add(var.set_fan_speed_target_sensor(sens))
+
+    if CONF_FAN_SPEED_ACTUAL in config:
+        sens = await sensor.new_sensor(config[CONF_FAN_SPEED_ACTUAL])
+        cg.add(var.set_fan_speed_actual_sensor(sens))
+
+    if CONF_FUEL_PUMP_FREQUENCY in config:
+        sens = await sensor.new_sensor(config[CONF_FUEL_PUMP_FREQUENCY])
+        cg.add(var.set_fuel_pump_frequency_sensor(sens))
 
     if CONF_OPERATING_STATE in config:
         ts = await text_sensor.new_text_sensor(config[CONF_OPERATING_STATE])

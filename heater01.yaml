@@ -76,6 +76,14 @@ autoterm:
   battery_voltage:
     name: "Battery Voltage"
 
+  # Experimental diagnostic telemetry, requires 19-byte status response
+  fan_speed_target:
+    name: "Fan Speed Target"
+  fan_speed_actual:
+    name: "Fan Speed Actual"
+  fuel_pump_frequency:
+    name: "Fuel Pump Frequency"
+
   temperature_setpoint:
     name: "Temperature Setpoint"
     mode: box
