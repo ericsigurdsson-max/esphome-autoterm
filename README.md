@@ -15,6 +15,7 @@ This [ESPHome](https://esphome.io/) External Component allows to monitor and con
   - Control Panel
   - External
 - Battery voltage
+- Experimental extended status telemetry: requested fan RPM, actual fan RPM, and fuel-pump pulse frequency (Hz)
 
 ## Supported Devices
 - Autoterm Air 2D & 4D (Planar 2D & 44D)
@@ -48,6 +49,26 @@ This component exposes:
 - Ventilation (Switch)
 - Heater power (Switch)
 - Operating state (Text sensor)
+- Fan speed target and actual (RPM), fuel pump pulse frequency (Hz; optional diagnostic sensors)
+
+## Experimental live telemetry
+
+The following ESPHome configuration under `autoterm:` enables diagnostic data from a **19-byte** heater status (`0x0F`) response:
+
+```yaml
+  fan_speed_target:
+    name: "Fan Speed Target"
+  fan_speed_actual:
+    name: "Fan Speed Actual"
+  fuel_pump_frequency:
+    name: "Fuel Pump Frequency"
+```
+
+The byte offsets and conversions were reverse-engineered for **Air 2D**, and have **not yet been validated on Air 4D**. The status parser only publishes these values when it receives a CRC-validated response with the expected 19-byte payload. A heater that uses a different format will leave these entities unavailable. Values are published on every valid status message (rather than the normal periodic refresh) to capture transient startup behavior.
+
+These are diagnostic readings, **not a direct measurement of thermal output or the current 1–10 power stage**. Fuel pump frequency may help estimate thermal output, but needs validation/calibration for the specific heater before being converted to kW or a displayed power stage. No new commands are sent to the heater.
+
+Protocol reference: [Air 2D serial-control notes](https://github.com/schroeder-robert/autoterm-air-2d-serial-control#readme).
 
 ## Optional MQTT
 Optionally enable MQTT for basic integration.
